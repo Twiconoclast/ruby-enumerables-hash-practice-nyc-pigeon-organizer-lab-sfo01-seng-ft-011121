@@ -1,14 +1,17 @@
 def nyc_pigeon_organizer(data)
   by_name = {}
-  data.each do |cgl, cgl_hash|
-    cgl_hash.each do |cgl_s, name_arr|
-      name_arr.each do |name|
-        new_arr = (cgl_hash.select {|k, v| v.include?(name)}).keys
-        new_arr = new_arr.map {|k| k.to_s}
-        by_name[name]= {cgl => new_arr}
-        by_name[name][cgl] = new_arr
-      end
+  name_arr = data[:gender][:male] + data[:gender][:female]
+  name_arr.each do |name|
+    name_hash = {}
+    name_hash[name] = {}
+    data.each do |outer, inner|
+      name_hash[name] = name_hash[name].merge(hash_maker(name, data, outer))
     end
+    by_name = by_name.merge(name_hash)
   end
   return by_name
+end
+
+def hash_maker(name, hash, key)
+  return {key => (hash[key].select {|k, v|v.include?(name)}.keys).map {|ele| ele.to_s}}
 end
